@@ -48,11 +48,11 @@ spec:
 
                 sh "git rev-parse --short HEAD > commit-id"
 
-                tag = readFile('commit-id').replace("\n", "").replace("\r", "")
-                appName = "hello-kenzan"
-                registryHost = "192.168.200.21:30797/"
-                imageName = "${registryHost}${appName}:${tag}"
-                env.BUILDIMG=imageName
+                def tag = readFile('commit-id').replace("\n", "").replace("\r", "")
+                def appName = "hello-kenzan"
+                def registryHost = "192.168.200.21:30797/"
+                def imageName = "${registryHost}${appName}:${tag}"
+                // def BUILDIMG=imageName
             }
         }
         stage('build and Push image') {
@@ -66,7 +66,7 @@ spec:
         stage('Deploy') {
             steps {
                 container('kubectl') {
-                    sh "sed 's#127.0.0.1:30400/hello-kenzan:latest#'$BUILDIMG'#' applications/hello-kenzan/k8s/deployment.yaml | kubectl apply -f -"
+                    sh "sed 's#127.0.0.1:30400/hello-kenzan:latest#'${imageName}'#' applications/hello-kenzan/k8s/deployment.yaml | kubectl apply -f -"
                     sh "kubectl rollout status deployment/hello-kenzan"
                 }
             }
