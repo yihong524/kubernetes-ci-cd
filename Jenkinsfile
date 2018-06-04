@@ -48,10 +48,10 @@ spec:
 
                 sh "git rev-parse --short HEAD > commit-id"
                 script {
-                    def tag = readFile('commit-id').replace("\n", "").replace("\r", "")
+                    // def tag = readFile('commit-id').replace("\n", "").replace("\r", "")
                     def appName = "hello-kenzan"
                     def registryHost = "192.168.200.21:30797/"
-                    def imageName = "${registryHost}${appName}:${tag}"
+                    def imageName = "${registryHost}${appName}:${env.BUILD_NUMBER}"
                     // def BUILDIMG=imageName
                 }
             }
