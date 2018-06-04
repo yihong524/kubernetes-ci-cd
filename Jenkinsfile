@@ -47,12 +47,13 @@ spec:
                 checkout scm
 
                 sh "git rev-parse --short HEAD > commit-id"
-
-                def tag = readFile('commit-id').replace("\n", "").replace("\r", "")
-                def appName = "hello-kenzan"
-                def registryHost = "192.168.200.21:30797/"
-                def imageName = "${registryHost}${appName}:${tag}"
-                // def BUILDIMG=imageName
+                script {
+                    def tag = readFile('commit-id').replace("\n", "").replace("\r", "")
+                    def appName = "hello-kenzan"
+                    def registryHost = "192.168.200.21:30797/"
+                    def imageName = "${registryHost}${appName}:${tag}"
+                    // def BUILDIMG=imageName
+                }
             }
         }
         stage('build and Push image') {
