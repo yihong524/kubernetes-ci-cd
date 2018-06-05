@@ -41,33 +41,31 @@ spec:
 """
         }
     }
+    environment {
+        appName = "hello-kenzan"
+        registryHost = "192.168.200.21:30797/"
+        imageName = "${registryHost}${appName}:${env.BUILD_NUMBER}"
+        // def BUILDIMG=imageName
+    }
     stages {
         stage('checkout code') {
             steps {
                 checkout scm
-
-                sh "git rev-parse --short HEAD > commit-id"
-                script {
-                    // def tag = readFile('commit-id').replace("\n", "").replace("\r", "")
-                    def appName = "hello-kenzan"
-                    def registryHost = "192.168.200.21:30797/"
-                    def imageName = "${registryHost}${appName}:${env.BUILD_NUMBER}"
-                    // def BUILDIMG=imageName
-                }
+                // sh "git rev-parse --short HEAD > commit-id"
             }
         }
         stage('build and Push image') {
             steps {
                 container('docker') {
-                    sh "docker build -t ${imageName} -f applications/hello-kenzan/Dockerfile applications/hello-kenzan"
-                    sh "docker push ${imageName}"
+                    sh "docker build -t ${env.imageName} -f applications/hello-kenzan/Dockerfile applications/hello-kenzan"
+                    sh "docker push ${env.imageName}"
                 }
             }
         }
         stage('Deploy') {
             steps {
                 container('kubectl') {
-                    sh "sed 's#127.0.0.1:30400/hello-kenzan:latest#'${imageName}'#' applications/hello-kenzan/k8s/deployment.yaml | kubectl apply -f -"
+                    sh "sed 's#127.0.0.1:30400/hello-kenzan:latest#'${env.imageName}'#' applications/hello-kenzan/k8s/deployment.yaml | kubectl apply -f -"
                     sh "kubectl rollout status deployment/hello-kenzan"
                 }
             }
